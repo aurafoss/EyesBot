@@ -149,5 +149,5 @@ else:
     last_data["number_of_buy_orders"] = 0
     last_data["number_of_sell_orders"] = 0
 
-with open("./live_tools/strategies/grid_spot_usd/last_data.json", "w") as outfile:
+with open("./EyesBot/strategies/grid_spot_usd/last_data.json", "w") as outfile:
     json.dump(last_data, outfile)
