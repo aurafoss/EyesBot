@@ -9,7 +9,7 @@ import time
 import json
 
 f = open(
-    "./EyesBot/strategies/grid_spot_usd/last_data.json",
+    "./EyesBot/strategies/grid_spot_usd/lastdata.json",
 )
 last_data = json.load(f)
 f.close()
