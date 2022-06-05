@@ -28,6 +28,30 @@ Grid trading:
 
 >python3 EyesBot/strategies/grid_spot_usd/strategy.py
 
+Alligator:
+
+>python3 EyesBot/strategies/Alligator/Alligator.py
+
+AlliPerpETH:
+
+>python3 EyesBot/strategies/AlliPerp/AlliPerpETH.py
+
+AlliPerpBTC:
+
+>python3 EyesBot/strategies/AlliPerp/AlliPerpBTC.py
+
+CrossEMA+RSI:
+
+>python3 EyesBot/strategies/CrossEMA+RSI/CrossEMA+RSI.py
+
+Trix:
+
+>python3 EyesBot/strategies/Trix/Trix.py
+
+BigWillv2:
+
+>python3 EyesBot/strategies/BigWillv2/BigWillv2.py
+
 # Automatisation du processus
 ouvrir le crontab:
 
@@ -46,8 +70,33 @@ Grid Trading ( toute les 5 min ):
 
 >*/5 * * * * python3 EyesBot/strategies/grid_spot_usd/strategy.py >> cronlog.log
 
-# Secret.json
-Pour ajouter plus de compte:
+Alligator (1h):
 
-"account#": { "apiKey":"", "secret":"", "subAccountName":"" }
+>0 * * * * python3 EyesBot/strategies/Alligator/Alligator.py >> cronlog.log
+
+AlliPerpETH (1h):
+
+>0 * * * * python3 EyesBot/strategies/AlliPerp/AlliPerpETH.py >> cronlog.log
+
+AlliPerpBTC (1h):
+
+>0 * * * * python3 EyesBot/strategies/AlliPerp/AlliPerpBTC.py >> cronlog.log
+
+CrossEMA+RSI (1h):
+
+>0 * * * * python3 EyesBot/strategies/CrossEMA+RSI/CrossEMA+RSI.py >> cronlog.log
+
+Trix (1h):
+
+>0 * * * * python3 EyesBot/strategies/Trix/Trix.py >> cronlog.log
+
+
+BigWillv2 (1h):
+
+>0 * * * * python3 EyesBot/strategies/BigWillv2/BigWillv2.py >> cronlog.log
+
+
+
+# Secret.json
+Pour ajouter plus de compte -> Modifier "New_Account_Name" a la fin du fichier secret.json
 
