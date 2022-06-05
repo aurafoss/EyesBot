@@ -20,18 +20,12 @@ print("Strategie Trix -> Execution Time :", current_time)
 
 account_to_select = "Trix"
 
-ftx = SpotFtx(
+ftx_auth_object = SpotFtx(
     apiKey=secret[account_to_select]["apiKey"],
     secret1=secret[account_to_select]["secret"],
     subAccountName=secret[account_to_select]["subAccountName"],
 )
-ftx_auth_object = {
-    "apiKey": apiKey,
-    "secret": secret1,
-    'headers': {
-        'FTX-SUBACCOUNT': subAccountName
-    }
-}
+
 session = ccxt.ftx(ftx_auth_object)
 markets = session.load_markets()
 
