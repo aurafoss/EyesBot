@@ -14,7 +14,7 @@ f = open(
 secret = json.load(f)
 f.close()
 
-account_to_select = "AlliPerp"
+account_to_select = "AlliPerpBTC"
 
 
 ftx = EyesBotPerp(
