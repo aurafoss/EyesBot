@@ -9,6 +9,7 @@ import numpy as np
 import ta
 from datetime import datetime
 import json
+
 f = open('./secret.json',)
 secret = json.load(f)
 f.close()
@@ -18,12 +19,19 @@ current_time = now.strftime("%d/%m/%Y %H:%M:%S")
 print("Strategie Trix -> Execution Time :", current_time)
 
 account_to_select = "Trix"
-ftx_auth_object = SpotFtx(
+
+ftx = SpotFtx(
     apiKey=secret[account_to_select]["apiKey"],
-    secret=secret[account_to_select]["secret"],
+    secret1=secret[account_to_select]["secret"],
     subAccountName=secret[account_to_select]["subAccountName"],
 )
-
+ftx_auth_object = {
+    "apiKey": apiKey,
+    "secret": secret1,
+    'headers': {
+        'FTX-SUBACCOUNT': subAccountName
+    }
+}
 session = ccxt.ftx(ftx_auth_object)
 markets = session.load_markets()
 
