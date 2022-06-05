@@ -1,102 +1,108 @@
-import ftx
+import sys 
+
+sys.path.append("./EyesBot")
+import ccxt
 import pandas as pd
-import json
-import time
+from utilities.spot_ftx import SpotFtx
+from utilities.custom_indicators import Trix
+import numpy as np
 import ta
-from math import *
+from datetime import datetime
+import json
+f = open('./secret.json',)
+secret = json.load(f)
+f.close()
 
-def truncate(n, decimals=0):
-    r = floor(float(n)*10**decimals)/10**decimals
-    return str(r)
+now = datetime.now()
+current_time = now.strftime("%d/%m/%Y %H:%M:%S")
+print("Strategie Trix -> Execution Time :", current_time)
 
-def getBalance(myclient, coin):
-    jsonBalance = myclient.get_balances()
-    if jsonBalance == []: 
-        return 0
-    pandaBalance = pd.DataFrame(jsonBalance)
-    if pandaBalance.loc[pandaBalance['coin'] == coin].empty: 
-        return 0
-    else: 
-        return float(pandaBalance.loc[pandaBalance['coin'] == coin]['free'])
-
-pairSymbol = 'ETH/USD'
-fiatSymbol = 'USD'
-cryptoSymbol = 'ETH'
-myTruncate = 3
-i = 9
-j = 21
-accountName = ''
-goOn = True
-
-client = ftx.FtxClient(
-    api_key='',
-    api_secret='', 
-    subaccount_name=accountName
+account_to_select = "Trix"
+ftx_auth_object = SpotFtx(
+    apiKey=secret[account_to_select]["apiKey"],
+    secret=secret[account_to_select]["secret"],
+    subAccountName=secret[account_to_select]["subAccountName"],
 )
-result = client.get_balances()
 
-data = client.get_historical_data(
-    market_name=pairSymbol, 
-    resolution=3600, 
-    limit=1000, 
-    start_time=float(round(time.time()))-150*3600, 
-    end_time=float(round(time.time())))
-df = pd.DataFrame(data)
+session = ccxt.ftx(ftx_auth_object)
+markets = session.load_markets()
 
 
-trixLength = 9
-trixSignal = 21
-df['TRIX'] = ta.trend.ema_indicator(ta.trend.ema_indicator(ta.trend.ema_indicator(close=df['close'], window=trixLength), window=trixLength), window=trixLength)
-df['TRIX_PCT'] = df["TRIX"].pct_change()*100
-df['TRIX_SIGNAL'] = ta.trend.sma_indicator(df['TRIX_PCT'],trixSignal)
-df['TRIX_HISTO'] = df['TRIX_PCT'] - df['TRIX_SIGNAL']
-df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=14, smooth1=3, smooth2=3)
-print(df)
+# Vous pouvez changer la paire ou la timeframe ici
+pair_symbol = "BTC/USD"
+symbol_coin = "BTC"
+symbol_usd = "USD"
+timeframe = "1h"
 
-actualPrice = df['close'].iloc[-1]
-fiatAmount = getBalance(client, fiatSymbol)
-cryptoAmount = getBalance(client, cryptoSymbol)
-minToken = 5/actualPrice
-print('coin price :',actualPrice, 'usd balance', fiatAmount, 'coin balance :',cryptoAmount)
 
-def buyCondition(row, previousRow):
-    if row['TRIX_HISTO'] > 0 and row['STOCH_RSI'] <= 0.82:
+limit = 1000
+min_size = float(markets[pair_symbol]["info"]["minProvideSize"])
+
+df = pd.DataFrame(data=session.fetch_ohlcv(
+    pair_symbol, timeframe, None, limit=limit))
+df = df.rename(
+    columns={0: 'timestamp', 1: 'open', 2: 'high', 3: 'low', 4: 'close', 5: 'volume'})
+df = df.set_index(df['timestamp'])
+df.index = pd.to_datetime(df.index, unit='ms')
+del df['timestamp']
+
+# Definitions des indiicateurs
+df['sma_long'] = ta.trend.sma_indicator(close = df['close'], window = 500) # Moyenne simple longue
+df['stoch_rsi'] = ta.momentum.stochrsi(close = df['close'], window = 14) # Stochastic RSI non moyenné (K=1 sur Trading View)
+
+trix_window = 9
+trix_signal = 21
+df['trix_line'] = ta.trend.ema_indicator(ta.trend.ema_indicator(ta.trend.ema_indicator(
+                    close = df['close'], window=trix_window),
+                    window=trix_window), window=trix_window).pct_change()*100 # Ligne trix principale
+df['trix_signal'] = ta.trend.sma_indicator(close = df['trix_line'], window = trix_signal) # Ligne signale
+
+# Condition pour rentrer en achat (row = période actuelle et previous_row = période précédente)
+def buy_condition(row, previous_row = None):
+    if row['trix_line'] > row['trix_signal'] and row['stoch_rsi'] < 0.8 and row['close'] > row['sma_long']:
         return True
     else:
         return False
 
-def sellCondition(row, previousRow):
-    if row['TRIX_HISTO'] < 0 and row['STOCH_RSI'] >= 0.2:
+# Condition pour vendre (row = période actuelle et previous_row = période précédente)
+def sell_condition(row, previous_row = None):
+    if row['trix_signal'] > row['trix_line'] and row['stoch_rsi'] > 0.2:
         return True
     else:
         return False
 
-if buyCondition(df.iloc[-2], df.iloc[-3]):
-    if float(fiatAmount) > 5:
-        quantityBuy = truncate(float(fiatAmount)/actualPrice, myTruncate)
-        buyOrder = client.place_order(
-            market=pairSymbol, 
-            side="buy", 
-            price=None, 
-            size=quantityBuy, 
-            type='market')
-        print("BUY", buyOrder)
-    else:
-        goOn = True
-        print("If you  give me more USD I will buy more",cryptoSymbol) 
 
-elif sellCondition(df.iloc[-2], df.iloc[-3]):
-    if float(cryptoAmount) > minToken:
-        sellOrder = client.place_order(
-            market=pairSymbol, 
-            side="sell", 
-            price=None, 
-            size=truncate(cryptoAmount, myTruncate), 
-            type='market')
-        print("SELL", sellOrder)
-    else:
-        goOn = True
-        print("If you give me more",cryptoSymbol,"I will sell it")
-else :
-    goOn = True
-    print("No opportunity to take")
+def get_balance(symbol):
+    balance = 0
+    try:
+        balance = pd.DataFrame(session.fetchBalance())['total'][symbol]
+    except:
+        balance = 0
+    return balance
+
+balance_coin = get_balance(symbol_coin)
+balance_usd = get_balance(symbol_usd)
+row = df.iloc[-2]
+
+if buy_condition(row) and balance_usd > min_size*row["close"]:
+    amount_to_buy = balance_usd / row["close"] 
+    session.createOrder(
+                pair_symbol, 
+                'market', 
+                "buy", 
+                session.amount_to_precision(pair_symbol, amount_to_buy),
+                None
+            )
+    print("Achat de " + str(session.amount_to_precision(pair_symbol, amount_to_buy)) + " " + symbol_coin + " au prix d'environ " +  str(row["close"]) + " $")
+elif sell_condition(row) and  balance_coin > min_size:
+    amount_to_sell = balance_coin
+    session.createOrder(
+                pair_symbol, 
+                'market', 
+                "sell", 
+                session.amount_to_precision(pair_symbol, amount_to_sell),
+                None
+            )
+    print("Vente de " + str(session.amount_to_precision(pair_symbol, amount_to_sell)) + " " + symbol_coin + " au prix d'environ " +  str(row["close"]) + " $")
+else:
+    print("Nono le robot ne voit pas d'opportunité de trade actuellement. Il suffit d'attendre ;)")

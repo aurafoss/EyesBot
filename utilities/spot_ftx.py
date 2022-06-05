@@ -86,6 +86,16 @@ class SpotFtx():
         del result['timestamp']
         return result
 
+    def get_last_historical(self, symbol, timeframe, limit):
+        result = pd.DataFrame(data=self._session.fetch_ohlcv(
+            symbol, timeframe, None, limit=limit))
+        result = result.rename(
+            columns={0: 'timestamp', 1: 'open', 2: 'high', 3: 'low', 4: 'close', 5: 'volume'})
+        result = result.set_index(result['timestamp'])
+        result.index = pd.to_datetime(result.index, unit='ms')
+        del result['timestamp']
+        return result
+
     def get_bid_ask_price(self, symbol):
         try:
             ticker = self._session.fetchTicker(symbol)
