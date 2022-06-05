@@ -1,77 +1,102 @@
-import ftx
+import sys 
+
+sys.path.append("./EyesBot")
+import ccxt
 import pandas as pd
+from utilities.spot_ftx import SpotFtx
+from utilities.custom_indicators import Cross
+import numpy as np
 import ta
-import time
+from datetime import datetime
 import json
-from math import *
 
-accountName = ''
-pairSymbol = 'ETH/USD'
-fiatSymbol = 'USD'
-cryptoSymbol = 'ETH'
-myTruncate = 3
+f = open('./secret.json',)
+secret = json.load(f)
+f.close()
 
-client = ftx.FtxClient(api_key='',
-                   api_secret='', subaccount_name=accountName)
+now = datetime.now()
+current_time = now.strftime("%d/%m/%Y %H:%M:%S")
+print("Strategie Trix -> Execution Time :", current_time)
 
-data = client.get_historical_data(
-    market_name=pairSymbol, 
-    resolution=3600, 
-    limit=1000, 
-    start_time=float(
-    round(time.time()))-100*3600, 
-    end_time=float(round(time.time())))
-df = pd.DataFrame(data)
+account_to_select = "Cross"
 
-df['EMA28']=ta.trend.ema_indicator(df['close'], 28)
-df['EMA48']=ta.trend.ema_indicator(df['close'], 48)
-df['STOCH_RSI']=ta.momentum.stochrsi(df['close'])
-#print(df)
+ftx_auth_object = SpotFtx(
+    apiKey=secret[account_to_select]["apiKey"],
+    secret1=secret[account_to_select]["secret"],
+    subAccountName=secret[account_to_select]["subAccountName"],
+)
 
-def getBalance(myclient, coin):
-    jsonBalance = myclient.get_balances()
-    if jsonBalance == []: 
-        return 0
-    pandaBalance = pd.DataFrame(jsonBalance)
-    print(pandaBalance)
-    if pandaBalance.loc[pandaBalance['coin'] == coin].empty: 
-        return 0
-    else: 
-        return float(pandaBalance.loc[pandaBalance['coin'] == coin]['total'])
+session = ccxt.ftx(ftx_auth_object)
+markets = session.load_markets()
 
-def truncate(n, decimals=0):
-    r = floor(float(n)*10**decimals)/10**decimals
-    return str(r)
+
+# Vous pouvez changer la paire ou la timeframe ici
+pair_symbol = "BTC/USD"
+symbol_coin = "BTC"
+symbol_usd = "USD"
+timeframe = "1h"
+
+limit = 1000
+min_size = float(markets[pair_symbol]["info"]["minProvideSize"])
+
+df = pd.DataFrame(data=session.fetch_ohlcv(
+    pair_symbol, timeframe, None, limit=limit))
+df = df.rename(
+    columns={0: 'timestamp', 1: 'open', 2: 'high', 3: 'low', 4: 'close', 5: 'volume'})
+df = df.set_index(df['timestamp'])
+df.index = pd.to_datetime(df.index, unit='ms')
+del df['timestamp']
+
+# Definitions des indiicateurs
+df['ema1'] = ta.trend.ema_indicator(close = df['close'], window = 25) # Moyenne exponentiel courte
+df['ema2'] = ta.trend.ema_indicator(close = df['close'], window = 45) # Moyenne exponentiel moyenne
+df['sma_long'] = ta.trend.sma_indicator(close = df['close'], window = 600) # Moyenne simple longue
+df['stoch_rsi'] = ta.momentum.stochrsi(close = df['close'], window = 14) # Stochastic RSI non moyenné (K=1 sur Trading View)
+
+def buy_condition(row, previous_row = None):
+    if row['ema1'] > row['ema2'] and row['stoch_rsi'] < 0.8 and row['close'] > row['sma_long']:
+        return True
+    else:
+        return False
     
-fiatAmount = getBalance(client, fiatSymbol)
-cryptoAmount = getBalance(client, cryptoSymbol)
-actualPrice = df['close'].iloc[-1]
-minToken = 5/actualPrice
-print('coin price :',actualPrice, 'usd balance', fiatAmount, 'coin balance :',cryptoAmount)
-
-if df['EMA28'].iloc[-2] > df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] < 0.8:
-    if float(fiatAmount) > 5:
-        quantityBuy = truncate(float(fiatAmount)/actualPrice, myTruncate)
-        buyOrder = client.place_order(
-            market=pairSymbol, 
-            side="buy", 
-            price=None, 
-            size=quantityBuy, 
-            type='market')
-        print("BUY", buyOrder)
+def sell_condition(row, previous_row = None):
+    if row['ema2'] > row['ema1'] and row['stoch_rsi'] > 0.2:
+        return True
     else:
-        print("If you  give me more USD I will buy more",cryptoSymbol)
+        return False
 
-elif df['EMA28'].iloc[-2] < df['EMA48'].iloc[-2] and df['STOCH_RSI'].iloc[-2] > 0.2:
-    if float(cryptoAmount) > minToken:
-        sellOrder = client.place_order(
-            market=pairSymbol, 
-            side="sell", 
-            price=None, 
-            size=truncate(cryptoAmount, myTruncate), 
-            type='market')
-        print("SELL", sellOrder)
-    else:
-        print("If you give me more",cryptoSymbol,"I will sell it")
-else :
-  print("No opportunity to take")
+
+def get_balance(symbol):
+    balance = 0
+    try:
+        balance = pd.DataFrame(session.fetchBalance())['total'][symbol]
+    except:
+        balance = 0
+    return balance
+
+balance_coin = get_balance(symbol_coin)
+balance_usd = get_balance(symbol_usd)
+row = df.iloc[-2]
+
+if buy_condition(row) and balance_usd > min_size*row["close"]:
+    amount_to_buy = balance_usd / row["close"] 
+    session.createOrder(
+                pair_symbol, 
+                'market', 
+                "buy", 
+                session.amount_to_precision(pair_symbol, amount_to_buy),
+                None
+            )
+    print("Achat de " + str(session.amount_to_precision(pair_symbol, amount_to_buy)) + " " + symbol_coin + " au prix d'environ " +  str(row["close"]) + " $")
+elif sell_condition(row) and  balance_coin > min_size:
+    amount_to_sell = balance_coin
+    session.createOrder(
+                pair_symbol, 
+                'market', 
+                "sell", 
+                session.amount_to_precision(pair_symbol, amount_to_sell),
+                None
+            )
+    print("Vente de " + str(session.amount_to_precision(pair_symbol, amount_to_sell)) + " " + symbol_coin + " au prix d'environ " +  str(row["close"]) + " $")
+else:
+    print("Nono le robot ne voit pas d'opportunité de trade actuellement. Il suffit d'attendre ;)")
