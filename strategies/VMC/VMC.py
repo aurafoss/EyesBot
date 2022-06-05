@@ -87,3 +87,4 @@ for order in open_orders:
         ftx.cancel_all_open_order(order["market"])
         ftx.place_market_order(order["market"], order["side"], order["remainingSize"])
         
+       #a suivre
