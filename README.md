@@ -1,9 +1,6 @@
 # EyesBot
  Le bot de trading accessible a tous 
 
-Account1 = Super reversal
-
-Account2 = Grid Trading
 
 # Liste des commandes pour set-up le projet:
 
