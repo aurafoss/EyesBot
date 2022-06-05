@@ -1,6 +1,12 @@
+import sys
+
+sys.path.append("./EyesBot")
+import ccxt
 from utilities.EyesBot_Perp import EyesBotPerp
 import ta
 import pandas as pd
+import time
+import json
 
 f = open(
     "./EyesBot/secret.json",
