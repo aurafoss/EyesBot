@@ -24,7 +24,7 @@ ftx = EyesBotPerp(
     )
 
 # -- Strategy variable --
-perpSymbol = 'ETH-PERP'
+perpSymbol = 'BTC-PERP'
 leverage = 2
 
 # -- Price Data --
