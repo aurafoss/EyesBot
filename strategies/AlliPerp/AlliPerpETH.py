@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("./EyesBot")
-import ccxt
 from strategies.AlliPerp.EyesBot_Perp import EyesBotPerp
 import ta
 import pandas as pd
