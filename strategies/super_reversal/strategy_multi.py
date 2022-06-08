@@ -127,10 +127,11 @@ for coin in coin_in_usd:
         available_wallet_pct -= params_coin[coin + "/USD"]["wallet_exposure"]
 
 pair_to_check = list(set(params_coin.keys()) - set(positions))
+#Achat
 for pair in pair_to_check:
     # iloc -2 to get the last completely close candle
     row = df_list[pair].iloc[-2]
-    if row["super_trend_direction"] == True and row["ema_short"] > row["ema_long"]:
+    if row["super_trend_direction"] == True and row["ema_short"] > row["ema_long"]: #ligne choix achat
         buy_limit_price = float(ftx.convert_price_to_precision(pair, row["ema_short"]))
         buy_quantity_in_usd = usd_balance * (
             params_coin[pair]["wallet_exposure"] / available_wallet_pct
@@ -143,7 +144,7 @@ for pair in pair_to_check:
             f"Place Buy Limit Order: {buy_quantity} {pair[:-4]} at the price of {buy_limit_price}$ ~{round(exchange_buy_quantity, 2)}$"
         )
         ftx.place_limit_order(pair, "buy", buy_quantity, buy_limit_price)
-
+#Vente
 for pair in positions:
     row = df_list[pair].iloc[-2]
     if row["super_trend_direction"] == False or row["ema_short"] < row["ema_long"]:
