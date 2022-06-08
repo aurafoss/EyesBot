@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("./EyesBot")
+sys.path.append("./EyesBot/utilities")
 import ccxt
 import ta
 import pandas as pd

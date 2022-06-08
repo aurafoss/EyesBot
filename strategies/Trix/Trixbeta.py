@@ -1,10 +1,11 @@
 import sys
 
-sys.path.append("./EyesBot")
+sys.path.append("./EyesBot/utilities")
 import ccxt
 import ta
 import pandas as pd
 from utilities.spot_ftx import SpotFtx
+from utilities.custom_indicators import Trix
 from datetime import datetime
 import time
 import json
