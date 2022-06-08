@@ -22,7 +22,7 @@ account_to_select = "Trix"
 
 ftx_auth_object = SpotFtx(
     apiKey=secret[account_to_select]["apiKey"],
-    secret1=secret[account_to_select]["secret"],
+    secret=secret[account_to_select]["secret"],
     subAccountName=secret[account_to_select]["subAccountName"],
 )
 
