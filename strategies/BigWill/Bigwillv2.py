@@ -78,11 +78,11 @@ for pair in params_coin:
     aoParam2 = 22
     stochWindow = 14
     willWindow = 14
-    df['EMA200'] =ta.trend.ema_indicator(close=df_list[pair]['close'], window=200)   
-    df['STOCH_RSI'] = ta.momentum.stochrsi(close=df_list[pair]['close'], window=stochWindow)
-    df['WillR'] = ta.momentum.williams_r(high=df_list[pair]['high'], low=df_list[pair]['low'], close=df_list[pair]['close'], lbp=willWindow)
-    df['EMA100'] =ta.trend.ema_indicator(close=df_list[pair]['close'], window=100)
-    df['EMA200'] =ta.trend.ema_indicator(close=df_list[pair]['close'], window=200)
+    df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)   
+    df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=stochWindow)
+    df['WillR'] = ta.momentum.williams_r(high=df['high'], low=df_list[pair]['low'], close=df_list[pair]['close'], lbp=willWindow)
+    df['EMA100'] =ta.trend.ema_indicator(close=df['close'], window=100)
+    df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)
     df_list[pair] = df
 
 coin_balance = ftx.get_all_balance()
