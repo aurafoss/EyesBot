@@ -78,7 +78,7 @@ for pair in params_coin:
     df['trix_line'] = ta.trend.ema_indicator(ta.trend.ema_indicator(ta.trend.ema_indicator(
                                     close = df['close'], window=trix_window),
                                     window=trix_window), window=trix_window).pct_change()*100 # Ligne trix principale 
-
+    df['trix_signal'] = ta.trend.sma_indicator(close = df['trix_line'], window = trix_signal) # Ligne signale
     df_list[pair] = df
 
 coin_balance = ftx.get_all_balance()
