@@ -18,8 +18,7 @@ f.close()
 
 timeframe = "1h"
 account_to_select = "Trix"
-maxOpenPosition = 3
-TpPct = 0.15
+
 params_coin = {
     "BTC/USD": {
         "wallet_exposure": 0.2,
