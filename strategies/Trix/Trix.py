@@ -18,27 +18,41 @@ f.close()
 
 timeframe = "1h"
 account_to_select = "Trix"
-
+trix_window = 9
+trix_signal = 21
 params_coin = {
     "BTC/USD": {
         "wallet_exposure": 0.2,
+        "trixLength": 9,
+        "trixSignal": 21
     },
     "ETH/USD": {
         "wallet_exposure": 0.2,
+        "trixLength": 9,
+        "trixSignal": 21
     },
-    "BNB/USD": {
+    "ETH/USD": {
         "wallet_exposure": 0.2,
-    },
-    "SOL/USD": {
-        "wallet_exposure": 0.2,
+        "trixLength": 9,
+        "trixSignal": 21
     },
     "APE/USD": {
+        "wallet_exposure": 0.2,
+        "trixLength": 9,
+        "trixSignal": 21
+    },
+    "SOL/USD": {
         "wallet_exposure": 0.1,
+        "trixLength": 9,
+        "trixSignal": 21
     },
     "ATOM/USD": {
         "wallet_exposure": 0.1,
+        "trixLength": 9,
+        "trixSignal": 21
     },
 }
+
 
 if sum(d["wallet_exposure"] for d in params_coin.values() if d) > 1:
     raise ValueError("Wallet exposure must be less or equal than 1")
@@ -70,14 +84,15 @@ for pair in params_coin:
     ftx.cancel_all_open_order(pair)
     df = ftx.get_last_historical(pair, timeframe, 1000)
     # -- Populate indicators --
-    trix_window = 9
-    trix_signal = 21
+    trix = Trix(
+        df["close"],
+        params["trixLength"],
+        params["trixSignal"],
+    )
     df['sma_long'] = ta.trend.sma_indicator(close = df['close'], window = 500) # Moyenne simple longue
     df['stoch_rsi'] = ta.momentum.stochrsi(close = df['close'], window = 14) # Stochastic RSI non moyenné (K=1 sur Trading View)
-    df['trix_line'] = ta.trend.ema_indicator(ta.trend.ema_indicator(ta.trend.ema_indicator(
-                                    close = df['close'], window=trix_window),
-                                    window=trix_window), window=trix_window).pct_change()*100 # Ligne trix principale 
-    df['trix_signal'] = ta.trend.sma_indicator(close = df['trix_line'], window = trix_signal) # Ligne signale
+    df['trix_line'] = trix.trix_line() # Ligne trix principale 
+    df['trix_signal'] = trix.trix_signal_line() # Ligne signale
     df_list[pair] = df
 
 coin_balance = ftx.get_all_balance()
