@@ -11,7 +11,7 @@ import json
 f = open(
     "./EyesBot/strategies/grid_spot_usd/lastdata.json",
 )
-last_data = json.load(f)
+lastdata = json.load(f)
 f.close()
 f = open(
     "./EyesBot/secret.json",
@@ -106,10 +106,10 @@ elif total_orders == len(df_order):
     print("no new orders")
 
 else:
-    buy_order_to_create = last_data["number_of_sell_orders"] - len(
+    buy_order_to_create = lastdata["number_of_sell_orders"] - len(
         df_order.loc[df_order["side"] == "sell"]
     )
-    sell_order_to_create = last_data["number_of_buy_orders"] - len(
+    sell_order_to_create = lastdata["number_of_buy_orders"] - len(
         df_order.loc[df_order["side"] == "buy"]
     )
     print("Create", buy_order_to_create, "new buy orders")
@@ -143,11 +143,11 @@ for order in ftx.get_open_order():
 
 df_order = pd.DataFrame(orders_list)
 if df_order.empty == False:
-    last_data["number_of_buy_orders"] = len(df_order.loc[df_order["side"] == "buy"])
-    last_data["number_of_sell_orders"] = len(df_order.loc[df_order["side"] == "sell"])
+    lastdata["number_of_buy_orders"] = len(df_order.loc[df_order["side"] == "buy"])
+    lastdata["number_of_sell_orders"] = len(df_order.loc[df_order["side"] == "sell"])
 else:
-    last_data["number_of_buy_orders"] = 0
-    last_data["number_of_sell_orders"] = 0
+    lastdata["number_of_buy_orders"] = 0
+    lastdata["number_of_sell_orders"] = 0
 
-with open("./EyesBot/strategies/grid_spot_usd/last_data.json", "w") as outfile:
-    json.dump(last_data, outfile)
+with open("./EyesBot/strategies/grid_spot_usd/lastdata.json", "w") as outfile:
+    json.dump(lastdata, outfile)
