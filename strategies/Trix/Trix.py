@@ -93,6 +93,7 @@ for pair in params_coin:
     df['stoch_rsi'] = ta.momentum.stochrsi(close = df['close'], window = 14) # Stochastic RSI non moyenné (K=1 sur Trading View)
     df['trix_line'] = trix.trix_line() # Ligne trix principale 
     df['trix_signal'] = trix.trix_signal_line() # Ligne signale
+    df['ema1'] = ta.trend.ema_indicator(close = df['close'], window = 5) # Moyenne exponentielle 1
     df_list[pair] = df
 
 coin_balance = ftx.get_all_balance()
@@ -115,7 +116,7 @@ for pair in pair_to_check:
     # iloc -2 to get the last completely close candle
     row = df_list[pair].iloc[-2]
     if row['trix_line'] > row['trix_signal'] and row['stoch_rsi'] < 0.8 and row['close'] > row['sma_long']: #ligne choix achat
-        buy_limit_price = float(ftx.convert_price_to_precision(pair, row["ema_short"]))
+        buy_limit_price = float(ftx.convert_price_to_precision(pair, row["ema1"]))
         buy_quantity_in_usd = usd_balance * (
             params_coin[pair]["wallet_exposure"] / available_wallet_pct
         )
@@ -131,7 +132,7 @@ for pair in pair_to_check:
 for pair in positions:
     row = df_list[pair].iloc[-2]
     if row['trix_signal'] > row['trix_line'] and row['stoch_rsi'] > 0.2:#definition d'ordre de vente
-        sell_limit_price = float(ftx.convert_price_to_precision(pair, row["ema_short"]))
+        sell_limit_price = float(ftx.convert_price_to_precision(pair, row["ema1"]))
         sell_quantity = float(
             ftx.convert_amount_to_precision(pair, coin_balance[pair[:-4]])
         )

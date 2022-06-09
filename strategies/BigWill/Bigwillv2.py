@@ -83,6 +83,7 @@ for pair in params_coin:
     df['WillR'] = ta.momentum.williams_r(high=df['high'], low=df_list[pair]['low'], close=df_list[pair]['close'], lbp=willWindow)
     df['EMA100'] =ta.trend.ema_indicator(close=df['close'], window=100)
     df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)
+    df['ema1'] = ta.trend.ema_indicator(close = df['close'], window = 5) # Moyenne exponentielle 1
     df_list[pair] = df
 
 coin_balance = ftx.get_all_balance()
@@ -103,15 +104,15 @@ pair_to_check = list(set(params_coin.keys()) - set(positions))
 #Achat
 for pair in pair_to_check:
     # iloc -2 to get the last completely close candle
-    row = df_list[pair].iloc[-2]
-    previousRow = df_list[pair].iloc[-4]
+    row = df_list[pair].iloc[-1]
+    previousRow = df_list[pair].iloc[-3]
     if (
         row['AO'] >= 0
         and previousRow['AO'] > row['AO']
         and row['WillR'] < willOverSold
         and row['EMA100'] > row['EMA200']
     ): #ligne choix achat
-        buy_limit_price = float(ftx.convert_price_to_precision(pair, row["ema_short"]))
+        buy_limit_price = float(ftx.convert_price_to_precision(pair, row["ema1"]))
         buy_quantity_in_usd = usd_balance * (
             params_coin[pair]["wallet_exposure"] / available_wallet_pct
         )
@@ -131,7 +132,7 @@ for pair in positions:
         and row['STOCH_RSI'] > stochOverSold)
         or row['WillR'] > willOverBought
     ):#definition d'ordre de vente
-        sell_limit_price = float(ftx.convert_price_to_precision(pair, row["ema_short"]))
+        sell_limit_price = float(ftx.convert_price_to_precision(pair, row["ema1"]))
         sell_quantity = float(
             ftx.convert_amount_to_precision(pair, coin_balance[pair[:-4]])
         )

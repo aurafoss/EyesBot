@@ -16,7 +16,7 @@ secret = json.load(f)
 f.close()
 
 timeframe = "1h"
-account_to_select = "Trix"
+account_to_select = "CrossEMA+RSI"
 
 params_coin = {
     "BTC/USD": {

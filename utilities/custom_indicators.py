@@ -87,7 +87,7 @@ class Trix():
     def trix_signal_line(self) -> pd.Series:
         """ trix signal line
             Returns:
-                pd.Series: trix siganl line
+                pd.Series: trix signal line
         """
         return pd.Series(self.trixSignal, name="TRIX_SIGNAL_LINE")
 
