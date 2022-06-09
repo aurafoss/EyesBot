@@ -78,6 +78,7 @@ for pair in params_coin:
     aoParam2 = 22
     stochWindow = 14
     willWindow = 14
+    df['AO']= ta.momentum.awesome_oscillator(df['high'],df['low'],window1=aoParam1,window2=aoParam2)
     df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)   
     df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=stochWindow)
     df['WillR'] = ta.momentum.williams_r(high=df['high'], low=df['low'], close=df['close'], lbp=willWindow)
