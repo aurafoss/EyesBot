@@ -90,7 +90,7 @@ Trix (1h):
 
 BigWillv2 (1h):
 
->0 * * * * python3 EyesBot/strategies/BigWillv2/Bigwillv2.py >> cronlog.log
+>0 * * * * python3 EyesBot/strategies/BigWill/Bigwillv2.py >> cronlog.log
 
 
 
