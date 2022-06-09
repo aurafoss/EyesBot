@@ -27,17 +27,23 @@ params_coin = {
         "wallet_exposure": 0.2,
     },
     "BNB/USD": {
-        "wallet_exposure": 0.2,
+        "wallet_exposure": 0.1,
     },
-    "SOL/USD": {
-        "wallet_exposure": 0.2,
+    "CRO/USD": {
+        "wallet_exposure": 0.1,
     },
-    "APE/USD": {
+    "SHIB/USD": {
         "wallet_exposure": 0.1,
     },
     "AVAX/USD": {
         "wallet_exposure": 0.1,
     },
+    "FTT/USD": {
+        "wallet_exposure": 0.1,
+    },
+    "SOL/USD": {
+        "wallet_exposure": 0.1,
+    }    
 }
 
 if sum(d["wallet_exposure"] for d in params_coin.values() if d) > 1:
