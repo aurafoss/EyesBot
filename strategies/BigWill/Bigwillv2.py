@@ -80,7 +80,7 @@ for pair in params_coin:
     willWindow = 14
     df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)   
     df['STOCH_RSI'] = ta.momentum.stochrsi(close=df['close'], window=stochWindow)
-    df['WillR'] = ta.momentum.williams_r(high=df['high'], low=df_list[pair]['low'], close=df_list[pair]['close'], lbp=willWindow)
+    df['WillR'] = ta.momentum.williams_r(high=df['high'], low=df['low'], close=df['close'], lbp=willWindow)
     df['EMA100'] =ta.trend.ema_indicator(close=df['close'], window=100)
     df['EMA200'] =ta.trend.ema_indicator(close=df['close'], window=200)
     df['ema1'] = ta.trend.ema_indicator(close = df['close'], window = 5) # Moyenne exponentielle 1
