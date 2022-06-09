@@ -35,7 +35,7 @@ params_coin = {
     "APE/USD": {
         "wallet_exposure": 0.1,
     },
-    "ATOM/USD": {
+    "AVAX/USD": {
         "wallet_exposure": 0.1,
     },
 }
