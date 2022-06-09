@@ -47,7 +47,7 @@ Trix:
 
 BigWillv2:
 
->python3 EyesBot/strategies/Bigwillv2/BigWillv2.py
+>python3 EyesBot/strategies/BigWillv2/Bigwillv2.py
 
 # Automatisation du processus
 ouvrir le crontab:
