@@ -96,6 +96,10 @@ BigWillv2 (1h):
 
 >0 * * * * python3 EyesBot/strategies/BigWill/Bigwillv2.py >> cronlog.log
 
+Ichimoku (1h):
+
+>0 * * * * python3 EyesBot/strategies/Ichimoku/Ichimoku.py >> cronlog.log
+
 
 
 # Secret.json
