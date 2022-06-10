@@ -49,6 +49,10 @@ BigWillv2:
 
 >python3 EyesBot/strategies/BigWill/Bigwillv2.py
 
+Ichimoku:
+
+>python3 EyesBot/strategies/Ichimoku/Ichimoku.py
+
 # Automatisation du processus
 ouvrir le crontab:
 
