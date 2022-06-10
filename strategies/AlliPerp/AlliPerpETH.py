@@ -1,4 +1,4 @@
-from strategies.AlliPerp.EyesBot_Perp import EyesBotPerp
+from EyesBot_Perp import EyesBotPerp
 import ta
 import pandas as pd
 import time

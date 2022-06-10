@@ -1,4 +1,3 @@
-
 from EyesBot_Perp import EyesBotPerp
 import ta
 import pandas as pd
