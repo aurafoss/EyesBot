@@ -79,8 +79,8 @@ for pair in params_coin:
     # -- Populate indicators --
     df['kijun'] = ta.trend.ichimoku_base_line(df['high'], df['low'])
     df['tenkan'] = ta.trend.ichimoku_conversion_line(df['high'], df['low'])
-    df['ssa'] = ta.trend.ichimoku_a(df['high'], df['low'])
-    df['ssb'] = ta.trend.ichimoku_b(df['high'], df['low'])
+    df['SSA'] = ta.trend.ichimoku_a(df['high'], df['low'])
+    df['SSB'] = ta.trend.ichimoku_b(df['high'], df['low'])
     df['ssa25'] = ta.trend.ichimoku_a(df['high'], df['low']).shift(25)
     df['ssb25'] = ta.trend.ichimoku_b(df['high'], df['low']).shift(25)
     df['ssa52'] = ta.trend.ichimoku_a(df['high'], df['low']).shift(50)
