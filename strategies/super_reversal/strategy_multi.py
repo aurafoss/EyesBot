@@ -141,7 +141,7 @@ for pair in pair_to_check:
         )
         exchange_buy_quantity = buy_quantity * buy_limit_price
         print(
-            f"Place Buy Limit Order: {buy_quantity} {pair[:-4]} at the price of {buy_limit_price}$ ~{round(exchange_buy_quantity, 2)}$"
+            f"SuperReversal:Place Buy Limit Order: {buy_quantity} {pair[:-4]} at the price of {buy_limit_price}$ ~{round(exchange_buy_quantity, 2)}$"
         )
         ftx.place_limit_order(pair, "buy", buy_quantity, buy_limit_price)
 #Vente
@@ -154,7 +154,7 @@ for pair in positions:
         )
         exchange_sell_quantity = sell_quantity * sell_limit_price
         print(
-            f"Place Sell Limit Order: {sell_quantity} {pair[:-4]} at the price of {sell_limit_price}$ ~{round(exchange_sell_quantity, 2)}$"
+            f"SuperReversal:Place Sell Limit Order: {sell_quantity} {pair[:-4]} at the price of {sell_limit_price}$ ~{round(exchange_sell_quantity, 2)}$"
         )
         ftx.place_limit_order(pair, "sell", sell_quantity, sell_limit_price)
 
@@ -162,4 +162,4 @@ new_coin_in_usd = ftx.get_all_balance_in_usd()
 new_coin_in_usd = {x: y for x, y in new_coin_in_usd.items() if y != 0}
 for coin in new_coin_in_usd:
     new_coin_in_usd[coin] = str(round(new_coin_in_usd[coin], 2)) + " $"
-print("My current balance in USD:", new_coin_in_usd)
+print("SuperReversal:My current balance in USD:", new_coin_in_usd)

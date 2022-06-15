@@ -93,7 +93,7 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
             quantityMax, 
             leverage
         )
-        print("Open a market LONG at", actualPrice)
+        print("AlliPerpBTC:Open a market LONG at", actualPrice)
         # -- Create a market stop loss -3% --
         stopLoss = ftx.place_market_stop_loss(
             perpSymbol, 
@@ -102,7 +102,7 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
             actualPrice - 0.03 * actualPrice,
             leverage
         )
-        print("Place a Stop Loss at ", actualPrice - 0.03 * actualPrice)
+        print("AlliPerpBTC:Place a Stop Loss at ", actualPrice - 0.03 * actualPrice)
 
     elif openShortCondition(df.iloc[-2]):
         # -- Cancel all order (stop loss) --
@@ -116,7 +116,7 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
             quantityMax, 
             leverage
         )
-        print("Open a market SHORT at", actualPrice)
+        print("AlliPerpBTC:Open a market SHORT at", actualPrice)
         # -- Create a market stop loss -3% --
         stopLoss = ftx.place_market_stop_loss(
             perpSymbol, 
@@ -125,10 +125,10 @@ if len(ftx.get_open_position(perpSymbol)) == 0:
             actualPrice + 0.03 * actualPrice,
             leverage
         )
-        print("Place a Stop Loss at", actualPrice + 0.03 * actualPrice)
+        print("AlliPerpBTC:Place a Stop Loss at", actualPrice + 0.03 * actualPrice)
 
     else:
-        print("No opportunity to take")
+        print("AlliPerpBTC:No opportunity to take")
 
 else:
     # -- Check if you have a LONG open --
@@ -137,14 +137,14 @@ else:
         if closeLongCondition(df.iloc[-2]):
             ftx.close_all_open_position(perpSymbol)
             ftx.cancel_all_open_order(perpSymbol)
-            print('Close my LONG position')
+            print('AlliPerpBTC:Close my LONG position')
         else:
-            print("A LONG is running and I don't want to stop it")
+            print("AlliPerpBTC:A LONG is running and I don't want to stop it")
     # -- Check if you have a SHORT open --
     elif ftx.get_open_position(perpSymbol)[0]['side'] == 'short':
         if closeShortCondition(df.iloc[-2]):
             ftx.close_all_open_position(perpSymbol)
             ftx.cancel_all_open_order(perpSymbol)
-            print('Close my SHORT position')
+            print('AlliPerpBTC:Close my SHORT position')
         else:
-            print("A SHORT is running and I don't want to stop it")
+            print("AlliPerpBTC:A SHORT is running and I don't want to stop it")

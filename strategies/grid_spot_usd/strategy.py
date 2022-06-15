@@ -76,7 +76,7 @@ if (
     or len(df_order.loc[df_order["side"] == "buy"]) == 0
     or len(df_order.loc[df_order["side"] == "sell"]) == 0
 ):
-    print("create new grid")
+    print("Grid:create new grid")
     grid_buy, grid_sell = custom_grid(
         current_price,
         last_order_down=0.4,
@@ -103,7 +103,7 @@ if (
         )
 
 elif total_orders == len(df_order):
-    print("no new orders")
+    print("Grid:no new orders")
 
 else:
     buy_order_to_create = lastdata["number_of_sell_orders"] - len(
