@@ -41,7 +41,7 @@ def custom_grid(
 
 
 now = datetime.now()
-print(now.strftime("%d-%m %H:%M:%S"))
+print("Grid:",now.strftime("%d-%m %H:%M:%S"))
 
 
 ftx = SpotFtx(
@@ -112,8 +112,8 @@ else:
     sell_order_to_create = lastdata["number_of_buy_orders"] - len(
         df_order.loc[df_order["side"] == "buy"]
     )
-    print("Create", buy_order_to_create, "new buy orders")
-    print("Create", sell_order_to_create, "new sell orders")
+    print("Grid:Create", buy_order_to_create, "new buy orders")
+    print("Grid:Create", sell_order_to_create, "new sell orders")
     last_buy_order = df_order.loc[df_order["side"] == "buy"]["price"].max()
     last_sell_order = df_order.loc[df_order["side"] == "sell"]["price"].min()
 

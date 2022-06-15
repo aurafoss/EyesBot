@@ -75,7 +75,7 @@ ftx = SpotFtx(
 
 now = datetime.now()
 current_time = now.strftime("%d/%m/%Y %H:%M:%S")
-print("Execution Time :", current_time)
+print("SuperReversal:Execution Time :", current_time)
 
 open_orders = ftx.get_open_order()
 
@@ -83,7 +83,7 @@ for order in open_orders:
     order = order["info"]
     if float(order["filledSize"]) > 0:
         print(
-            f"Order on {order['market']} is partially fill, create {order['side']} Market of {order['remainingSize']} {order['market']} order to complete it"
+            f"SuperReversal:Order on {order['market']} is partially fill, create {order['side']} Market of {order['remainingSize']} {order['market']} order to complete it"
         )
         ftx.cancel_all_open_order(order["market"])
         ftx.place_market_order(order["market"], order["side"], order["remainingSize"])
